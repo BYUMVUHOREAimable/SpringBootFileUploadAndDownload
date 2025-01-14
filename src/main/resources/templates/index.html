@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="File upload and download interface">
+    <title>File Upload & Download</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #008080;
+            color: #333;
+            padding: 2rem 0;
+        }
+        
+        .main-title {
+            color: white;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .upload-card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+        
+        .file-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .file-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .download-icon {
+            font-size: 1.5rem;
+            color: #198754;
+            margin-bottom: 0.5rem;
+        }
+        
+        .preview-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <h1 class="text-center main-title">File Upload & Download</h1>
+
+        <!-- Upload Section -->
+        <div class="card upload-card mb-5">
+            <div class="card-body">
+                <h2 class="card-title h4 mb-4">Upload New File</h2>
+                <div class="alert alert-success" role="alert" th:if="${success}" th:text="${success}"></div>
+                
+                <form th:action="@{/upload}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="formFile" class="form-label">Choose a file to upload</label>
+                        <input class="form-control" name="file" type="file" id="formFile" required>
+                        <div class="invalid-feedback">Please select a file to upload.</div>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-upload me-2"></i>Upload File
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Files Grid -->
+        <div class="card">
+            <div class="card-body">
+                <h2 class="h4 mb-4">Uploaded Files</h2>
+                <div class="file-grid">
+                    <th:block th:each="emplist : ${list}">
+                        <div class="file-item">
+                            <a th:href="@{'/downloadfile?id=' + ${emplist.id}}" 
+                               class="text-decoration-none" 
+                               th:title="'Download ' + ${emplist.profilePicture}">
+                                <i class="fas fa-download download-icon"></i>
+                            </a>
+                            <img th:src="@{'/image?id=' + ${emplist.id}}" 
+                                 class="preview-image" 
+                                 th:alt="${emplist.profilePicture}">
+                            <div class="file-info">
+                                <div class="text-truncate" th:text="${emplist.profilePicture}"></div>
+                                <small class="text-muted" th:text="${emplist.size}"></small>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Form validation script -->
+    <script>
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+</body>
+</html>
